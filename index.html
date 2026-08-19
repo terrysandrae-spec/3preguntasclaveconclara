@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3 Preguntas Clave con CLARA | Eureka</title>
+    
+    <!-- Meta Tags para compartir en WhatsApp y Redes (Open Graph) -->
+    <meta property="og:title" content="👩‍💻 3 Preguntas Clave con CLARA" />
+    <meta property="og:description" content="Practica con CLARA y asegura una sustentación exitosa" />
+    <meta property="og:image" content="https://raw.githubusercontent.com/terrysandrae-spec/3preguntasclaveconclara/main/portada.png" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel para JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Configuración de Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        teal: '#1B9C9C',
+                        gold: '#F5A623',
+                        navy: '#16324F',
+                        cream: '#FFF8E7',
+                        white: '#FFFFFF'
+                    },
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        quicksand: ['Quicksand', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 25px -5px rgba(27, 156, 156, 0.1), 0 8px 10px -6px rgba(27, 156, 156, 0.1)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #FFF8E7; margin: 0; padding: 0; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .transition-smooth { transition: all 0.3s ease-in-out; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // --- DATOS DE LA DEMO (3 PREGUNTAS CLAVE) ---
+        const initialQuestions = [
+            {
+                "id": 1,
+                "categoria": "Tema y problema de investigación",
+                "pregunta": "¿Cuál es el tema central de tu investigación y por qué lo elegiste?",
+                "queEvalua": "Que tu elección de tema tiene una motivación real, no que fue \"lo que quedaba disponible\" en la lista de temas del asesor.",
+                "pasos": [
+                    "Nombra tu tema en una frase clara.",
+                    "Explica la razón personal, académica o social detrás de tu elección.",
+                    "Si aplica, menciona una experiencia o lectura previa que influyó en tu decisión."
+                ],
+                "plantilla": "El tema central de mi investigación es [tema], elegido porque [explica la relevancia personal, académica o social]. Me motivó especialmente [mencionar experiencia personal o estudio previo que influyó en la elección].",
+                "ejemplo": "Mi investigación se centra en el clima laboral y su relación con la productividad en empresas de retail. Elegí este tema porque, durante mis prácticas profesionales, observé que equipos con condiciones similares tenían resultados muy distintos, lo que despertó mi interés en entender qué factores explican esa diferencia.",
+                "errorComun": "No respondas \"porque me pareció interesante\" sin explicar el porqué — esa respuesta se siente vacía y el jurado espera una motivación más concreta.",
+                "esUltimaDeLaDemo": false
+            },
+            {
+                "id": 25,
+                "categoria": "Metodología",
+                "pregunta": "¿Cómo aseguraste la validez y fiabilidad de tus datos?",
+                "queEvalua": "Que tu instrumento realmente mide lo que dice medir, y que tus resultados son consistentes.",
+                "pasos": [
+                    "Describe los procedimientos usados (pruebas piloto, triangulación, control de calidad).",
+                    "Explica el propósito y la importancia de esos procedimientos."
+                ],
+                "plantilla": "Aseguré la validez y fiabilidad de los datos mediante [describe los procedimientos, como pruebas piloto, triangulación, control de calidad, etc.]. Estos pasos fueron necesarios para [explica el propósito y la importancia de estos procedimientos].",
+                "ejemplo": "Aseguré la validez y fiabilidad de los datos mediante una prueba piloto con 15 trabajadores antes de la aplicación final, y calculando el coeficiente Alfa de Cronbach para verificar la consistencia interna del cuestionario, obteniendo un valor de 0.87.",
+                "errorComun": "No confundas validez con confiabilidad — la confiabilidad mide consistencia (por ejemplo, con Alfa de Cronbach); la validez se obtiene por juicio de expertos o V de Aiken. Si el jurado detecta esta confusión, es una de las críticas metodológicas más comunes.",
+                "esUltimaDeLaDemo": false
+            },
+            {
+                "id": 31,
+                "categoria": "Resultados",
+                "pregunta": "¿Cuáles son los principales hallazgos de tu investigación?",
+                "queEvalua": "Que puedes sintetizar con claridad lo más importante de tu estudio, sin perderte en detalles secundarios.",
+                "pasos": [
+                    "Resume los hallazgos clave.",
+                    "Explica qué revelan sobre el problema de investigación."
+                ],
+                "plantilla": "Los principales hallazgos incluyen [resume los hallazgos clave]. Estos hallazgos indican que [explica qué revelan sobre el problema de investigación].",
+                "ejemplo": "Los principales hallazgos incluyen una correlación positiva y significativa entre el clima laboral y la productividad, siendo el reconocimiento y la comunicación con supervisores los factores con mayor peso. Esto indica que las intervenciones en esas áreas podrían tener el mayor impacto.",
+                "errorComun": "No listes todos los datos numéricos o citas textuales de tu tesis — selecciona solo los 2-3 hallazgos más relevantes para tu respuesta oral.",
+                "esUltimaDeLaDemo": true
+            }
+        ];
+
+        // --- COMPONENTES UI PRINCIPALES ---
+        
+        function App() {
+            const [mode, setMode] = useState('home'); // home, study, simulacro
+            const [questions, setQuestions] = useState(initialQuestions);
+            const [currentIndex, setCurrentIndex] = useState(0);
+            const [understood, setUnderstood] = useState(new Set()); 
+            const [isRevealed, setIsRevealed] = useState(false);
+            
+            // --- ESTADOS PARA SIMULACRO ---
+            const [timeLeft, setTimeLeft] = useState(90);
+            const [isTimerRunning, setIsTimerRunning] = useState(false);
+            const [simulacroStage, setSimulacroStage] = useState('answering'); // answering, evaluating
+            const [simulacroSubMode, setSimulacroSubMode] = useState('none'); // none, voice, text
+            const [transcript, setTranscript] = useState('');
+            const [isListening, setIsListening] = useState(false);
+            const [checkedSteps, setCheckedSteps] = useState(new Set());
+            const [simulacroScores, setSimulacroScores] = useState([]); // Array de porcentajes de la sesión
+            
+            const recognitionRef = useRef(null);
+
+            // Para la demo, el flujo es lineal, no usamos shuffle para garantizar el sentido del CTA Final
+            const currentList = questions;
+            const currentQuestion = currentList[currentIndex] || null;
+
+            // Timer Effect (Simulacro)
+            useEffect(() => {
+                let interval;
+                if (isTimerRunning && timeLeft > 0) {
+                    interval = setInterval(() => {
+                        setTimeLeft(prev => prev - 1);
+                    }, 1000);
+                } else if (timeLeft === 0 && simulacroStage === 'answering') {
+                    handleSimulacroSubmit();
+                }
+                return () => clearInterval(interval);
+            }, [isTimerRunning, timeLeft, simulacroStage]);
+
+            // Limpiar reconocimiento de voz al desmontar
+            useEffect(() => {
+                return () => {
+                    if (recognitionRef.current) {
+                        recognitionRef.current.stop();
+                    }
+                };
+            }, []);
+
+            // Handlers
+            const handleStartMode = (newMode) => {
+                setMode(newMode);
+                setCurrentIndex(0);
+                setIsRevealed(false);
+                
+                if (newMode === 'simulacro') {
+                    resetSimulacroForNextQuestion();
+                    setSimulacroScores([]);
+                }
+            };
+
+            const goHome = () => {
+                setMode('home');
+                setIsTimerRunning(false);
+                if (recognitionRef.current) recognitionRef.current.stop();
+            };
+
+            const toggleUnderstood = (id) => {
+                const newUnderstood = new Set(understood);
+                if (newUnderstood.has(id)) {
+                    newUnderstood.delete(id);
+                } else {
+                    newUnderstood.add(id);
+                }
+                setUnderstood(newUnderstood);
+            };
+
+            const resetProgress = () => {
+                if(window.confirm('¿Estás seguro de que deseas reiniciar tu progreso?')) {
+                    setUnderstood(new Set());
+                }
+            };
+
+            const handleNext = () => {
+                setIsRevealed(false);
+                if (currentIndex < currentList.length - 1) {
+                    setCurrentIndex(prev => prev + 1);
+                }
+            };
+
+            const handlePrev = () => {
+                if (currentIndex > 0) {
+                    setIsRevealed(false);
+                    setCurrentIndex(prev => prev - 1);
+                }
+            };
+
+            // --- LÓGICA ESPECÍFICA DE SIMULACRO ---
+
+            const handleStartVoice = () => {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (!SpeechRecognition) {
+                    setSimulacroSubMode('text');
+                    return;
+                }
+                
+                try {
+                    const recognition = new SpeechRecognition();
+                    recognition.lang = 'es-ES';
+                    recognition.continuous = true;
+                    recognition.interimResults = true;
+
+                    recognition.onresult = (event) => {
+                        let current = '';
+                        for (let i = 0; i < event.results.length; i++) {
+                            current += event.results[i][0].transcript;
+                        }
+                        setTranscript(current);
+                    };
+
+                    recognition.onerror = () => {
+                        setIsListening(false);
+                    };
+
+                    recognition.onend = () => {
+                        setIsListening(false);
+                    };
+
+                    recognitionRef.current = recognition;
+                    recognition.start();
+                    setIsListening(true);
+                    setSimulacroSubMode('voice');
+                } catch (e) {
+                    console.error("Error al iniciar voz:", e);
+                    setSimulacroSubMode('text');
+                }
+            };
+
+            const handleSimulacroSubmit = () => {
+                if (recognitionRef.current && isListening) {
+                    recognitionRef.current.stop();
+                    setIsListening(false);
+                }
+                setIsTimerRunning(false);
+                setSimulacroStage('evaluating');
+                setCheckedSteps(new Set());
+            };
+
+            const toggleChecklistStep = (idx) => {
+                const newSteps = new Set(checkedSteps);
+                if (newSteps.has(idx)) newSteps.delete(idx);
+                else newSteps.add(idx);
+                setCheckedSteps(newSteps);
+            };
+
+            const resetSimulacroForNextQuestion = () => {
+                setTimeLeft(90);
+                setIsTimerRunning(true);
+                setSimulacroStage('answering');
+                setSimulacroSubMode('none');
+                setTranscript('');
+                setCheckedSteps(new Set());
+            };
+
+            const handleNextSimulacro = () => {
+                const score = currentQuestion.pasos.length > 0 ? Math.round((checkedSteps.size / currentQuestion.pasos.length) * 100) : 100;
+                setSimulacroScores(prev => [...prev, score]);
+
+                if (currentIndex < currentList.length - 1) {
+                    setCurrentIndex(prev => prev + 1);
+                    resetSimulacroForNextQuestion();
+                } else {
+                    goHome();
+                }
+            };
+
+            // --- VISTAS Y COMPONENTES ---
+
+            // Componente del CTA de Pie de Página (Dinámico)
+            const renderCTA = (esUltima) => (
+                <div className={`mt-8 flex flex-col gap-4 items-center text-center font-quicksand w-full ${esUltima ? 'border-t-2 border-teal/20 pt-6' : 'pt-2'}`}>
+                    <p className={`text-navy mb-1 ${esUltima ? 'font-bold text-lg' : 'text-sm opacity-90'}`}>
+                        {esUltima ? "Esto fue solo una prueba de lo que CLARA tiene para ti. ¿Listo para seguir practicando?" : "¿Quieres seguir practicando después de esta demo?"}
+                    </p>
+                    <div className="w-full flex flex-col gap-3">
+                        <a href="https://pay.hotmart.com/X107230417D" target="_blank" rel="noopener noreferrer" className="w-full min-h-[44px] bg-gold text-navy font-fredoka text-lg py-4 rounded-2xl shadow-sm hover:bg-gold/90 transition-smooth flex justify-center items-center gap-2 transform hover:-translate-y-1">
+                            Adquirir CLARA completa
+                        </a>
+                        <div className="mt-3 bg-teal/5 p-4 rounded-2xl border border-teal/10">
+                            <p className="text-sm font-semibold text-teal mb-3">¿Quieres conocer más sobre CLARA?</p>
+                            <a href="https://wa.link/uggr7r" target="_blank" rel="noopener noreferrer" className="w-full min-h-[44px] bg-teal text-white font-fredoka py-3 rounded-xl shadow-sm hover:bg-teal/90 transition-smooth flex justify-center items-center gap-2">
+                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+                                Comunícate con nosotros
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const renderHome = () => (
+                <div className="flex flex-col items-center text-center p-6 space-y-8 animate-in fade-in duration-500 mt-2 break-words">
+                    
+                    {/* Imagen de Portada (Sustituye al bloque de texto turquesa) */}
+                    <img 
+                        src="https://raw.githubusercontent.com/terrysandrae-spec/3preguntasclaveconclara/main/portada.png" 
+                        alt="3 Preguntas Clave con CLARA" 
+                        className="w-full max-w-sm mx-auto rounded-3xl shadow-soft object-contain"
+                    />
+                    
+                    <div className="bg-white p-6 rounded-3xl shadow-soft w-full border border-teal/10 relative mt-4">
+                        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gold text-white font-bold px-4 py-1 rounded-full text-sm font-fredoka shadow-md whitespace-nowrap min-h-[32px] flex items-center">
+                            ¡Hola! Soy Clara 👋
+                        </div>
+                        <p className="text-navy font-quicksand text-base sm:text-lg leading-relaxed mt-4">
+                            Comprende cada respuesta, no la memorices. <span className="font-bold text-teal">Asegura una sustentación exitosa.</span>
+                            <br/><br/><strong>¿Cómo quieres prepararte hoy?</strong>
+                        </p>
+                    </div>
+
+                    <div className="w-full space-y-4">
+                        <button onClick={() => handleStartMode('study')} className="w-full min-h-[44px] bg-teal text-white font-fredoka text-xl py-4 rounded-2xl shadow-soft hover:bg-teal/90 transition-smooth transform hover:-translate-y-1 flex items-center justify-center gap-3">
+                            <svg className="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                            Modo Estudio
+                        </button>
+                        <button onClick={() => handleStartMode('simulacro')} className="w-full min-h-[44px] bg-navy text-white font-fredoka text-xl py-4 rounded-2xl shadow-soft hover:bg-navy/90 transition-smooth transform hover:-translate-y-1 flex items-center justify-center gap-3">
+                            <svg className="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Modo Simulacro
+                        </button>
+                    </div>
+                </div>
+            );
+
+            // Contenido central del MODO ESTUDIO
+            const renderStudyCardContent = (q) => (
+                <div className={`mt-6 space-y-5 overflow-hidden transition-smooth break-words ${isRevealed ? 'opacity-100 max-h-[3000px]' : 'opacity-0 max-h-0'}`}>
+                    <div className="bg-cream/50 p-4 rounded-2xl border border-teal/20">
+                        <h4 className="font-fredoka text-teal flex items-center gap-2 mb-2"><span className="text-xl flex-shrink-0">🎯</span> ¿Qué evalúa el jurado?</h4>
+                        <p className="font-quicksand text-navy text-sm leading-relaxed">{q.queEvalua}</p>
+                    </div>
+                    <div className="bg-cream/50 p-4 rounded-2xl border border-teal/20">
+                        <h4 className="font-fredoka text-teal flex items-center gap-2 mb-2"><span className="text-xl flex-shrink-0">🧭</span> Pasos para responder</h4>
+                        <ul className="font-quicksand text-navy text-sm space-y-2">
+                            {q.pasos.map((paso, idx) => (
+                                <li key={idx} className="flex items-start gap-2"><span className="text-gold font-bold flex-shrink-0">{idx+1}.</span> <span className="leading-relaxed">{paso}</span></li>
+                            ))}
+                        </ul>
+                    </div>
+                    <div className="bg-teal/10 p-4 rounded-2xl border border-teal/30">
+                        <h4 className="font-fredoka text-teal flex items-center gap-2 mb-2"><span className="text-xl flex-shrink-0">📝</span> Plantilla SESE</h4>
+                        <p className="font-quicksand text-navy text-sm italic leading-relaxed">"{q.plantilla}"</p>
+                    </div>
+                    <div className="bg-gold/10 p-4 rounded-2xl border border-gold/30">
+                        <h4 className="font-fredoka text-navy flex items-center gap-2 mb-2"><span className="text-xl flex-shrink-0">💡</span> Ejemplo real</h4>
+                        <p className="font-quicksand text-navy text-sm leading-relaxed">"{q.ejemplo}"</p>
+                    </div>
+                    <div className="bg-red-50 p-4 rounded-2xl border border-red-200">
+                        <h4 className="font-fredoka text-red-600 flex items-center gap-2 mb-2"><span className="text-xl flex-shrink-0">⚠️</span> Error común a evitar</h4>
+                        <p className="font-quicksand text-red-800 text-sm leading-relaxed">{q.errorComun}</p>
+                    </div>
+                    
+                    {/* CTA de la Demo - Modo Estudio */}
+                    {renderCTA(q.esUltimaDeLaDemo)}
+                </div>
+            );
+
+            const renderStudyMode = () => (
+                <div className="flex flex-col min-h-full animate-in fade-in duration-300">
+                    <div className="p-4 flex-grow flex flex-col pt-6 pb-6">
+                        {currentQuestion && (
+                            <div className="bg-white rounded-3xl p-6 shadow-soft flex-grow mb-6 relative border border-teal/5 break-words">
+                                <span className="inline-block bg-teal/10 text-teal font-fredoka text-xs px-3 py-1 rounded-full mb-4 uppercase tracking-wider">
+                                    {currentQuestion.categoria}
+                                </span>
+                                <h3 className="font-fredoka text-2xl text-navy leading-tight mb-6">
+                                    {currentQuestion.pregunta}
+                                </h3>
+
+                                {!isRevealed && (
+                                    <button onClick={() => setIsRevealed(true)} className="w-full min-h-[44px] bg-cream text-teal font-fredoka py-4 text-lg rounded-xl border-2 border-teal border-dashed hover:bg-teal/10 transition-smooth shadow-sm flex items-center justify-center gap-2">
+                                        Revelar Análisis SESE
+                                        <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                                    </button>
+                                )}
+
+                                {renderStudyCardContent(currentQuestion)}
+                            </div>
+                        )}
+
+                        {/* Controls */}
+                        {currentQuestion && (
+                            <div className="flex flex-col gap-4 mt-auto pb-4">
+                                <button 
+                                    onClick={() => toggleUnderstood(currentQuestion.id)}
+                                    className={`w-full min-h-[44px] py-4 rounded-2xl font-fredoka text-lg transition-smooth flex items-center justify-center gap-2 ${understood.has(currentQuestion.id) ? 'bg-gold text-white shadow-md' : 'bg-white text-navy border-2 border-gold/50 hover:bg-gold/10'}`}
+                                >
+                                    {understood.has(currentQuestion.id) ? '✅ Pregunta Comprendida' : 'Marcar como comprendida'}
+                                </button>
+                                
+                                <div className="flex gap-4">
+                                    <button onClick={handlePrev} disabled={currentIndex === 0} className={`flex-1 min-h-[44px] py-3 rounded-2xl font-quicksand font-bold bg-white text-navy shadow-sm border border-teal/10 transition-smooth ${currentIndex === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-cream'}`}>
+                                        Anterior
+                                    </button>
+                                    <button onClick={handleNext} disabled={currentIndex === currentList.length - 1} className={`flex-1 min-h-[44px] py-3 rounded-2xl font-quicksand font-bold text-white shadow-md transition-smooth ${currentIndex === currentList.length - 1 ? 'bg-navy/50 cursor-not-allowed' : 'bg-navy hover:bg-navy/90'}`}>
+                                        Siguiente
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+
+            // Contenido del MODO SIMULACRO
+            const renderSimulacroMode = () => {
+                if (!currentQuestion) return null;
+
+                const score = currentQuestion.pasos.length > 0 ? Math.round((checkedSteps.size / currentQuestion.pasos.length) * 100) : 100;
+                let scoreColor = 'text-red-700 bg-red-100 border-red-300';
+                if (score >= 80) scoreColor = 'text-green-700 bg-green-100 border-green-300';
+                else if (score >= 50) scoreColor = 'text-yellow-700 bg-yellow-100 border-yellow-300';
+
+                return (
+                <div className="p-4 flex flex-col min-h-full animate-in fade-in duration-300">
+                    
+                    {/* Timer y Controles */}
+                    <div className="flex flex-col items-center justify-center mb-6">
+                        <div className={`w-32 h-32 rounded-full flex items-center justify-center border-4 shadow-soft bg-white transition-colors duration-300 flex-shrink-0 ${timeLeft < 15 ? 'border-red-500 text-red-500' : 'border-teal text-navy'}`}>
+                            <span className="font-fredoka text-4xl">{timeLeft}s</span>
+                        </div>
+                        {simulacroStage === 'answering' && (
+                            <div className="flex gap-4 mt-4">
+                                <button onClick={() => setIsTimerRunning(!isTimerRunning)} className="min-h-[44px] text-teal hover:text-navy transition-smooth px-4 py-2 bg-white rounded-full shadow-sm border border-teal/10 font-quicksand text-sm font-bold flex items-center justify-center">
+                                    {isTimerRunning ? '⏸️ Pausar' : '▶️ Reanudar'}
+                                </button>
+                                <button onClick={() => setTimeLeft(90)} className="min-h-[44px] text-teal hover:text-navy transition-smooth px-4 py-2 bg-white rounded-full shadow-sm border border-teal/10 font-quicksand text-sm font-bold flex items-center justify-center">
+                                    🔄 Reiniciar
+                                </button>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="bg-white rounded-3xl p-6 shadow-soft flex-grow mb-6 relative border border-teal/5 break-words">
+                        <span className="inline-block bg-teal/10 text-teal font-fredoka text-xs px-3 py-1 rounded-full mb-4 uppercase tracking-wider">
+                            {currentQuestion.categoria}
+                        </span>
+                        <h3 className="font-fredoka text-2xl text-navy leading-tight mb-6">
+                            {currentQuestion.pregunta}
+                        </h3>
+
+                        {/* ESTADO 1: RESPONDIENDO */}
+                        {simulacroStage === 'answering' && (
+                            <div className="mt-6 space-y-4 animate-in fade-in duration-300">
+                                {simulacroSubMode === 'none' ? (
+                                    <div className="flex flex-col gap-4">
+                                        <button onClick={handleStartVoice} className="w-full min-h-[44px] bg-teal text-white font-fredoka py-4 text-lg rounded-xl shadow-sm hover:bg-teal/90 transition-smooth flex justify-center items-center gap-2">
+                                            🎤 Responder por voz
+                                        </button>
+                                        <button onClick={() => setSimulacroSubMode('text')} className="w-full min-h-[44px] bg-white text-navy border-2 border-teal border-dashed font-fredoka py-4 text-lg rounded-xl hover:bg-teal/5 transition-smooth flex justify-center items-center gap-2">
+                                            ⌨️ Responder por texto
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="flex flex-col gap-4 animate-in slide-in-from-bottom-4 duration-300">
+                                        {simulacroSubMode === 'voice' && (
+                                            <div className="flex items-center gap-2 text-teal font-fredoka mb-2 text-sm sm:text-base">
+                                                <span className="relative flex h-3 w-3 flex-shrink-0">
+                                                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal opacity-75"></span>
+                                                  <span className="relative inline-flex rounded-full h-3 w-3 bg-teal"></span>
+                                                </span>
+                                                Escuchando... (puedes editar el texto si lo deseas)
+                                            </div>
+                                        )}
+                                        <textarea
+                                            value={transcript}
+                                            onChange={(e) => setTranscript(e.target.value)}
+                                            placeholder={simulacroSubMode === 'text' ? "Escribe tu respuesta aquí para estructurar tus ideas..." : "Tu voz aparecerá aquí..."}
+                                            className="w-full h-32 p-4 rounded-xl border border-teal/20 font-quicksand text-navy focus:outline-none focus:ring-2 focus:ring-teal/50 resize-none break-words"
+                                        />
+                                        <button onClick={handleSimulacroSubmit} className="w-full min-h-[44px] bg-gold text-white font-fredoka py-4 text-lg rounded-xl shadow-sm hover:bg-gold/90 transition-smooth">
+                                            Ya respondí
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* ESTADO 2: AUTOEVALUACIÓN */}
+                        {simulacroStage === 'evaluating' && (
+                            <div className="mt-6 space-y-5 animate-in slide-in-from-bottom-4 duration-500">
+                                <div className="bg-gold/10 p-4 rounded-2xl border border-gold/30">
+                                    <h4 className="font-fredoka text-navy flex items-center gap-2 mb-2"><span className="text-xl flex-shrink-0">💡</span> Ejemplo de respuesta modelo</h4>
+                                    <p className="font-quicksand text-navy text-sm leading-relaxed">"{currentQuestion.ejemplo}"</p>
+                                </div>
+
+                                <div className="bg-teal/10 p-4 rounded-2xl border border-teal/30">
+                                    <h4 className="font-fredoka text-teal flex items-center gap-2 mb-2"><span className="text-xl flex-shrink-0">💬</span> Tu respuesta</h4>
+                                    <p className="font-quicksand text-navy text-sm leading-relaxed italic">"{transcript || 'No registraste ninguna respuesta.'}"</p>
+                                </div>
+
+                                <div className="bg-white p-4 sm:p-5 rounded-2xl border border-teal/20 shadow-sm">
+                                    <h4 className="font-fredoka text-teal flex items-center gap-2 mb-3"><span className="text-xl flex-shrink-0">🧭</span> Checklist de Autoevaluación</h4>
+                                    <p className="text-sm text-navy/70 mb-4 font-quicksand">Marca los pasos que lograste incluir en tu respuesta para calcular tu puntaje:</p>
+                                    <div className="space-y-3">
+                                        {currentQuestion.pasos.map((paso, idx) => (
+                                            <label key={idx} className="flex items-start gap-3 p-3 rounded-xl border border-cream hover:bg-cream/50 cursor-pointer transition-smooth min-h-[44px]">
+                                                <input
+                                                    type="checkbox"
+                                                    className="mt-1 w-5 h-5 text-teal rounded border-teal/30 focus:ring-2 focus:ring-teal/50 accent-teal flex-shrink-0"
+                                                    checked={checkedSteps.has(idx)}
+                                                    onChange={() => toggleChecklistStep(idx)}
+                                                />
+                                                <span className="font-quicksand text-navy text-sm leading-relaxed flex-grow">{paso}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                    <div className={`mt-5 p-3 rounded-xl border-2 font-fredoka text-center text-lg sm:text-xl transition-colors duration-300 break-words ${scoreColor}`}>
+                                        Puntaje de autoevaluación: {score}%
+                                    </div>
+                                </div>
+
+                                <div className="bg-red-50 p-4 rounded-2xl border border-red-200">
+                                    <h4 className="font-fredoka text-red-600 flex items-center gap-2 mb-2"><span className="text-xl flex-shrink-0">⚠️</span> Error común a evitar</h4>
+                                    <p className="font-quicksand text-red-800 text-sm leading-relaxed">{currentQuestion.errorComun}</p>
+                                </div>
+                                
+                                {/* CTA de la Demo - Modo Simulacro (Aparece tras responder) */}
+                                {renderCTA(currentQuestion.esUltimaDeLaDemo)}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Botón Siguiente en Evaluación */}
+                    {simulacroStage === 'evaluating' && (
+                        <div className="mt-8 pb-4 flex justify-center">
+                            <button onClick={handleNextSimulacro} className="w-auto min-h-[44px] px-6 sm:px-10 py-4 rounded-2xl font-fredoka text-lg sm:text-xl bg-navy text-white shadow-md hover:bg-navy/90 transition-smooth flex justify-center items-center gap-2">
+                                {currentIndex < currentList.length - 1 ? 'Siguiente pregunta' : 'Finalizar Simulacro'}
+                                <svg className="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path></svg>
+                            </button>
+                        </div>
+                    )}
+                </div>
+            )};
+
+            return (
+                <div className="max-w-xl mx-auto h-[100dvh] sm:h-[850px] bg-cream flex flex-col shadow-2xl relative font-quicksand overflow-hidden sm:rounded-3xl sm:my-8 border-x border-teal/10 break-words">
+                    
+                    {/* Header Píldora - Eureka */}
+                    <div className="bg-navy text-white text-center py-2 px-2 font-fredoka text-xs sm:text-sm tracking-wide z-30 relative shadow-md">
+                        ✨ Eureka - Tesis con Sandra
+                    </div>
+
+                    {/* Header Píldora de Navegación */}
+                    {mode !== 'home' && (
+                        <div className="bg-white px-2 sm:px-4 py-2 sm:py-3 flex justify-between items-center shadow-sm z-20">
+                            <button onClick={goHome} className="text-teal font-bold flex items-center gap-1 hover:text-navy transition-smooth min-h-[44px] min-w-[44px] p-1">
+                                <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
+                                <span className="text-sm sm:text-base">Inicio</span>
+                            </button>
+                            
+                            <div className="flex items-center gap-2 sm:gap-3">
+                                {mode === 'study' ? (
+                                    <>
+                                        <span className="font-fredoka text-navy text-xs sm:text-sm bg-cream px-3 py-1.5 sm:py-1 rounded-full border border-teal/20 text-center">
+                                            🏆 {understood.size} / {questions.length} Comprendidas
+                                        </span>
+                                        <button onClick={resetProgress} className="text-red-400 hover:text-red-600 p-1 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full" title="Reiniciar progreso">
+                                            <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                                        </button>
+                                    </>
+                                ) : (
+                                    <span className="font-fredoka text-navy text-xs sm:text-sm bg-cream px-3 py-1.5 sm:py-1 rounded-full border border-teal/20 text-center">
+                                        📊 {simulacroScores.length} practicadas | Promedio: {simulacroScores.length > 0 ? Math.round(simulacroScores.reduce((a,b)=>a+b,0)/simulacroScores.length) : 0}%
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Progress Bar Header (Sólo en Estudio) */}
+                    {mode === 'study' && (
+                        <div className="h-1.5 w-full bg-teal/10 flex-shrink-0">
+                            <div 
+                                className="h-full bg-gold transition-all duration-500 ease-out" 
+                                style={{ width: `${(understood.size / questions.length) * 100}%` }}
+                            ></div>
+                        </div>
+                    )}
+
+                    {/* Contenido Principal */}
+                    <div className="flex-grow overflow-y-auto hide-scrollbar pb-32">
+                        {mode === 'home' && renderHome()}
+                        {mode === 'study' && renderStudyMode()}
+                        {mode === 'simulacro' && renderSimulacroMode()}
+                    </div>
+
+                    {/* Footer Fijo */}
+                    <footer className="absolute bottom-0 w-full bg-navy text-cream/70 text-xs py-3 px-2 text-center font-quicksand z-20 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.1)] break-words">
+                        <p>Practica con CLARA y asegura una sustentación exitosa | <strong>Eureka - Tesis con Sandra</strong></p>
+                    </footer>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
